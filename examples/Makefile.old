@@ -1,0 +1,50 @@
+OCAMLC = ocamlc
+OPTIONS= -verbose -I $(KYOTOCAMLPATH) kyotocaml.cma
+OPTIONSDBM= -verbose -I $(KYOTOCAMLPATH) kcdbm.cma
+OCAMLOPT = ocamlopt
+ORUN = ocamlrun -I ../src/
+
+KYOTOCAMLPATH = ../src
+
+all: exHF1.byte exHF1a.byte exString.byte exDBM.byte
+
+exString.byte: exString.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+exHF1.byte: exHF1.ml 
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+exHF1a.byte: exHF1a.ml 
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+exDBM.byte: exDBM.ml
+	$(OCAMLC) $(OPTIONSDBM) -o $@  $<
+
+runString: exString.byte
+	$(ORUN) $< 
+
+runHF1: exHF1.byte
+	$(ORUN) $< 
+
+runHF1a: exHF1a.byte
+	$(ORUN) $< 
+
+runDBM: exDBM.byte
+	$(ORUN) $< 
+
+clean:
+	rm -f *.o *.cm[ixo]
+
+clean-all:
+	rm -f *.[oa] *.so *.cm[ixoa] *.cmxa *.byte
+
+cleandata:
+	rm -f *.kc[htdfx]
+
+clean+: clean-all cleandata
+
+clean~:
+	rm -f *[~]
+
+.PHONY: all clean clean-all cleandata clean+ clean~ \
+	runHF1 runHF1a runString

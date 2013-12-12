@@ -1,0 +1,21 @@
+Version 0.3
+- kcdb.c, kyotocaml.ml, kyotocaml.mli: bulk operations added 
+- tests/test6.ml: unit test for for bulk operations added (new)
+
+Version 0.2.1
+- Documentation revised/enhanced
+- Unit tests revised/enhanced
+- kcdb.c: minor inconsistencies fixed
+
+Version 0.2
+- Build Process switched to OCamlMakefile (=> https://bitbucket.org/mmottl/ocaml-makefile/overview)
+- Kcdbm.ml, Kcdbm.mli: extension (transaction, synchronisation, dump/load)
+- Kcdbm.ml: implementation of function 'add' was changed
+- tests/test1.ml: section 'custom ops' added
+- kyotocaml.ml[i]: functions 'KCCur.*.setvalue', 'KCCur.*.setvalue_string': incorrect signature fixed
+- tests/test2[o|x].ml: test for 'KCCur.*.setvalue', 'KCCur.*.setvalue_string' added
+- kcstring.c: constructor function 'init_kcstring' added
+- kyotocaml.ml[i]/kcidx.c: Kyotcaml.KCIdx.Ret/Exc.innter_db_operation added
+
+Version 0.1
+- First upload

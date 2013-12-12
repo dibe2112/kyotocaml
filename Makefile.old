@@ -1,0 +1,50 @@
+OCAMLC = ocamlc
+OCAMLOPT = ocamlopt
+OCAMLDOC = ocamldoc
+OCAMLMKLIB = ocamlmklib
+CC = gcc
+
+all: lib top examples tests
+
+all-without-tests: lib top examples
+
+lib:
+	$(MAKE) -C ./src -f Makefile.old all
+
+top: lib
+	$(MAKE) -C ./src -f Makefile.old top
+
+examples: lib
+	$(MAKE) -C ./examples -f Makefile.old all
+
+tests: lib
+	$(MAKE) -C ./tests -f Makefile.old all
+
+doc:
+	$(MAKE) -C ./src -f Makefile.old doc
+	
+clean:
+	$(MAKE) -C ./src  -f Makefile.old clean
+	$(MAKE) -C ./examples  -f Makefile.old clean
+	$(MAKE) -C ./tests  -f Makefile.old clean
+
+clean-all:
+	$(MAKE) -C ./src  -f Makefile.old clean-all
+	$(MAKE) -C ./examples  -f Makefile.old clean-all
+	$(MAKE) -C ./tests -f Makefile.old clean-all
+
+clean~:
+	$(MAKE) -C ./src  -f Makefile.old clean~
+	$(MAKE) -C ./examples  -f Makefile.old clean~
+	$(MAKE) -C ./tests  -f Makefile.old clean~
+
+version:
+	$(OCAMLOPT) -version
+	$(OCAMLC) -version
+	$(OCAMLDOC) -version
+	$(OCAMLMKLIB) -version
+	$(CC) -dumpversion
+
+.PHONY: all all-without-tests lib top doc examples test\
+	clean clean-all clean~ \
+	version

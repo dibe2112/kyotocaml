@@ -1,0 +1,149 @@
+CC = /usr/bin/gcc
+CFLAGS := -Wall -O3 -fPIC -DNDEBUG $(CFLAGSADD)
+#CFLAGS := -Wall -O1 -fPIC -DDEBUG -DFINMGS_DB -DFINMGS_CUR $(CFLAGSADD)
+OCAMLC = ocamlc
+OCAMLOPT = ocamlopt
+OMKTOP = ocamlmktop
+OMKLIB = ocamlmklib
+OFLAGS =
+OCFLAGS =
+OOPTFLAGS = 
+OCAMLDOC = ocamldoc
+DESTDIR = .
+
+DOCDIR = ../doc
+DOCTITLE = Kyotocaml
+DOCOPTS = -v -html 
+
+KCPATH = /usr/local/lib/
+KCLIB = kyotocabinet
+OBJFILES = ocinterf-util.o kcstring.o kcdb.o kccur.o kcidx.o kcdbcallback.o
+TOPLEVEL = toplevel
+
+OLIBDIR = `ocamlc -where`
+INSTALLDIR = $(OLIBDIR)/kyotocaml
+#INSTALLDIR = ~/kyotOCAml/
+
+
+.DEFAULT_GOAL := all
+
+
+all: kyotocaml kcdbm
+
+kyotocaml: kyotocaml.cma kyotocaml.cmxa
+
+kyotocaml.cma: kyotocaml.cmo dllkyotocaml_stubs.so
+	$(OCAMLC) -verbose -a -o $@  $< \
+		-dllib -lkyotocaml_stubs \
+		-ccopt -L$(KCPATH) \
+		-cclib -l$(KCLIB)
+
+
+kyotocaml.cmxa: kyotocaml.cmx dllkyotocaml_stubs.so
+	$(OCAMLOPT) -verbose -a -o $@  $< \
+		-cclib -lkyotocaml_stubs \
+		-ccopt -L$(KCPATH) \
+		-cclib -l$(KCLIB)
+
+# ---------------------------------
+
+top: toplevel
+
+
+toplevel: kyotocaml.cma 
+	$(OMKTOP) -verbose -o $(TOPLEVEL) $< \
+		-dllib -lkyotocaml_stubs \
+		-ccopt -L$(KCPATH) \
+		-cclib -l$(KCLIB)
+
+# ---------------------------------
+kyotocaml.cmo: kyotocaml.ml kyotocaml.cmi
+	$(OCAMLC) -c $(OFLAGS) $(OCFLAGS) $<
+
+
+kyotocaml.cmx: kyotocaml.ml kyotocaml.cmi
+	$(OCAMLOPT) -c $(OFLAGS) $(OOPTFLAGS) $<
+
+
+kyotocaml.cmi: kyotocaml.mli
+	$(OCAMLOPT) -c $(OFLAGS) $<
+
+
+dllkyotocaml_stubs.so: $(OBJFILES)
+	$(OMKLIB) -o kyotocaml_stubs $? \
+		-L$(KCPATH) -l$(KCLIB)
+
+
+# ---------------------------------
+
+kcdbm: kcdbm.cma kcdbm.cmxa
+
+kcdbm.cma: kcdbm.cmo dllkyotocaml_stubs.so
+	$(OCAMLC) -verbose -a -o $@  $< \
+		-dllib -lkyotocaml_stubs \
+		-ccopt -L$(KCPATH) \
+		-cclib -l$(KCLIB)
+
+kcdbm.cmxa: kcdbm.cmx dllkyotocaml_stubs.so
+	$(OCAMLOPT) -verbose -a -o $@  $< \
+		-cclib -lkyotocaml_stubs \
+		-ccopt -L$(KCPATH) \
+		-cclib -l$(KCLIB)
+
+kcdbm.cmo: kcdbm.ml kcdbm.cmi
+	$(OCAMLC) -c $(OFLAGS) $(OCFLAGS) $<
+
+
+kcdbm.cmx: kcdbm.ml kcdbm.cmi
+	$(OCAMLOPT) -c $(OFLAGS) $(OOPTFLAGS) $<
+
+
+kcdbm.cmi: kcdbm.mli
+	$(OCAMLOPT) -c $(OFLAGS) $<
+
+# ---------------------------------
+
+%.o: %.c kcstring.h ocinterf-util.h
+	$(CC) -c $(CFLAGS) $<
+
+
+# ---------------------------------
+
+doc: kyotocaml.mli kcdbm.mli
+	$(OCAMLDOC) $(DOCOPTS) -t $(DOCTITLE) -d $(DOCDIR) $?
+
+# ---------------------------------
+
+install:
+	install -D -m=u=rw,g=r,o=r dllkyotocaml_stubs.so $(OLIBDIR)/stublibs	
+	install -d $(INSTALLDIR)
+	install -D -m=u=rw,g=r,o=r -t $(INSTALLDIR) \
+		kyotocaml.a kyotocaml.cm* \
+		kcdbm.a kcdbm.cm*
+
+
+uninstall:
+	rm -f $(OLIBDIR)/stublibs/dllkyotocaml_stubs.so	
+	rm -f $(INSTALLDIR)/*.a $(INSTALLDIR)/kyotocaml.cm* 
+	rmdir --ignore-fail-on-non-empty $(INSTALLDIR)/
+
+# ---------------------------------
+
+clean:
+	rm -f *.o *.cm[ixo]
+
+
+clean-all:
+	rm -f *.[oa] *.so *.cm[ixoa] *.cmxa $(TOPLEVEL) $(DOCDIR)/* 
+
+
+clean~:
+	rm -f *[~]
+
+
+# ---------------------------------
+.PHONY: clean clean-all clean~ \
+	doc top toplevel all kyotocaml kcdbm \
+	install uninstall
+
+

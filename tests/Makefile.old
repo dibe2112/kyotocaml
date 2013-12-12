@@ -1,0 +1,117 @@
+OCAMLC = ocamlc
+OCAMLOPT = ocamlopt
+OPTIONS = -verbose unix.cma -I +oUnit oUnit.cma -I $(KYOTOCAMLDIR) kyotocaml.cma
+OPTIONS.OPT = -verbose unix.cmxa -I +oUnit oUnit.cmxa -I $(KYOTOCAMLDIR) kyotocaml.cmxa
+OPTIONSDBM = -verbose unix.cma -I +oUnit oUnit.cma -I $(KYOTOCAMLDIR) kcdbm.cma
+OPTIONSDBM.OPT = -verbose unix.cmxa -I +oUnit oUnit.cmxa -I $(KYOTOCAMLDIR) kcdbm.cmxa
+ORUN = ocamlrun -I ../src/
+
+KYOTOCAMLDIR = ../src
+
+all: byte nat
+
+byte: test1.byte \
+   test2o.byte test2x.byte \
+   test3o.byte test3x.byte \
+   test4o.byte test4x.byte \
+   test5.byte
+
+nat: test1.nat \
+   test2o.nat test2x.nat \
+   test3o.nat test3x.nat \
+   test4o.nat test4x.nat \
+   test5.nat
+
+test1: test1.byte test1.nat
+
+test1.byte: test1.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test1.nat: test1.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test2o: test2o.byte test2o.nat
+
+test2o.byte: test2o.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test2o.nat: test2o.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test2x: test2x.byte test2x.nat
+
+test2x.byte: test2x.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test2x.nat: test2x.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test3o: test3o.byte test3o.nat
+
+test3o.byte: test3o.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test3o.nat: test3o.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test3x: test3x.byte test3x.nat
+
+test3x.byte: test3x.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test3x.nat: test3x.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test4o: test4o.byte test4o.nat
+
+test4o.byte: test4o.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test4o.nat: test4o.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test4x: test4x.byte test4x.nat
+
+test4x.byte: test4x.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test4x.nat: test4x.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+test5: test5.byte test5.nat
+
+test5.byte: test5.ml
+	$(OCAMLC) $(OPTIONS) -o $@  $<
+
+test5.nat: test5.ml
+	$(OCAMLOPT) $(OPTIONS.OPT) -o $@  $<
+
+#testdbm: testdbm.byte testdbm.nat
+
+#testdbm.byte: testdbm.ml
+#	$(OCAMLC) $(OPTIONSDBM) -o $@  $<
+
+#testdbm.nat: testdbm.ml
+#	$(OCAMLOPT) $(OPTIONSDBM.OPT) -o $@  $<
+
+#-------------------------------------------------------------------------------------
+
+clean:
+	rm -f *.o *.cm[ixo] *.byte *.nat
+
+clean-all:
+	rm -f *.[oa] *.so *.cm[ixoa] *.cmxa *.byte *.nat
+
+cleandata:
+	rm -f -R *.kc[df] *.dump
+	rm -f *.kc[htx]
+
+clean+: clean-all cleandata
+	
+clean~:
+	rm -f *[~]
+
+#-------------------------------------------------------------------------------------
+.PHONY: test1 test2o test2x test3o test3x test4o test4x test5 testdbm
+
+.PHONY: all clean clean-all cleandata clean+ clean~

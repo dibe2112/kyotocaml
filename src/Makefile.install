@@ -1,0 +1,29 @@
+export OCAMLMAKEFILE = ../OCamlMakefile
+export MAKEFILEINSTALL = ./Makefile.install
+
+export OCAML_LIB_INSTALL = $(OCAMLLIBPATH)/kyotocaml
+
+C_FILES = ocinterf-util.c kcstring.c kcdbcallback.c kcdb.c kccur.c kcidx.c
+
+#ifeq ($(MAKECMDGOALS),install-kc)
+ifneq (,$(findstring -kc,$(MAKECMDGOALS)))
+SOURCES = $(C_FILES) kyotocaml.ml kyotocaml.mli 
+RESULT = kyotocaml
+endif
+ 
+#ifeq ($(MAKECMDGOALS),install-dbm)
+ifneq (,$(findstring -dbm,$(MAKECMDGOALS)))
+  SOURCES = kcdbm.ml kcdbm.mli
+  RESULT = kcdbm
+endif
+
+all: bcl ncl
+
+install-dbm install-kc: rawinstall
+
+uninstall-dbm uninstall-kc: rawuninstall
+
+
+include $(OCAMLMAKEFILE)
+
+
